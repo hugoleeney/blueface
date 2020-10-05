@@ -1,9 +1,10 @@
 import json
-
 import fs as fs
 import pytest
+from moneyed import Money, USD
 
 from shoppingcart.price_store import NoPriceForProductException, PriceStoreDict, PriceStoreJson, PriceStoreJsonFS
+
 
 prices = {"apple": 1.0, "pear": 2.0}
 prices_json_string = json.dumps(prices)
@@ -35,7 +36,7 @@ def price_store_fs():
 
 @pytest.mark.parametrize("ps", ['price_store_dict', 'price_store_json', 'price_store_fs'], indirect=True)
 def test_get_product_price(ps):
-    assert ps.get_product_price("apple") == 1.0
+    assert ps.get_product_price("apple") == Money(1.0, 'eur')
 
     with pytest.raises(NoPriceForProductException):
         assert ps.get_product_price("tomato")

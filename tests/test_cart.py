@@ -1,4 +1,6 @@
-from shoppingcart.cart import ShoppingCart, FXDict
+import pytest
+
+from shoppingcart.cart import ShoppingCart, FXDict, NoSuchCurrencyException
 from shoppingcart.price_store import PriceStoreCode, PriceStoreDict
 
 
@@ -31,10 +33,31 @@ FX_SYMBOLS = {
 }
 
 
+FX_RATES_CHF = {
+    'chf': 1.21
+}
+
+
 def test_cart_in_dollars():
-    cart = ShoppingCart(PriceStoreCode(), FXDict(FX_RATES, FX_SYMBOLS))
+    cart = ShoppingCart(PriceStoreCode(), FXDict(FX_RATES, FX_SYMBOLS), 'usd')
     cart.add_item("banana", 1)
-    receipt = cart.print_receipt('usd')
+
+    receipt = cart.print_receipt()
     assert receipt[0] == "banana - 1 - $1.33"
     assert receipt[1] == "Total - $1.33"
 
+
+def test_unknown_rate():
+    cart = ShoppingCart(PriceStoreCode(), FXDict(FX_RATES, FX_SYMBOLS), 'chf')
+    cart.add_item("banana", 1)
+
+    with pytest.raises(NoSuchCurrencyException):
+        cart.print_receipt()
+
+
+def test_unknown_symbol():
+    cart = ShoppingCart(PriceStoreCode(), FXDict(FX_RATES_CHF, FX_SYMBOLS), 'chf')
+    cart.add_item("banana", 1)
+
+    with pytest.raises(NoSuchCurrencyException):
+        cart.print_receipt()
