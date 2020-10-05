@@ -1,3 +1,12 @@
+# Instructions
+
+Using python 3.6.1
+
+```
+pip install -r requirements.txt
+pytest
+```
+
 # Shopping cart
 
 It is a partial implementation of a shopping till system, which you might find at a supermarket.
